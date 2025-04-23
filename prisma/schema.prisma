@@ -1,0 +1,608 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  income
+  expense
+}
+
+enum InventoryMovementType {
+  entry
+  exit
+  adjustment
+}
+
+enum AppointmentStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+  SCHEDULED
+}
+
+enum CashRegisterStatus {
+  open
+  closed
+  reconciled
+}
+
+enum CommissionType {
+  percentage
+  fixed
+}
+
+model User {
+  id                 String           @id @default(uuid())
+  name               String?
+  email              String           @unique @map("user_email")
+  emailVerified      DateTime?        @map("email_verified")
+  image              String?
+  password           String           @map("hashed_password")
+  accessToken        String?
+  subscriptionId     String?          @map("subscription_id")
+  subscriptionRole   String?          @map("subscription_role")
+  subscriptionStatus String?          @map("subscription_status")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+  accounts           Account[]
+  sessions           Session[]
+  authenticators     Authenticator[]
+  salons             Salon[]
+  roles              UserRole[]
+  auditLogs          AuditLog[]
+  StripeCustomer     StripeCustomer[]
+  DataExport         DataExport[]
+  DataImport         DataImport[]
+
+  @@index([email], name: "user_email_idx")
+  @@map("users")
+}
+
+model Salon {
+  id                 String              @id @default(uuid())
+  ownerId            String              @map("owner_id")
+  owner              User                @relation(fields: [ownerId], references: [id])
+  name               String
+  address            String
+  city               String?
+  cep                String
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  professionals      Professional[]
+  customers          Customer[]
+  services           Service[]
+  products           Product[]
+  sales              Sale[]
+  expenses           Expense[]
+  commissions        Commission[]
+  paymentMethods     PaymentMethod[]
+  appointments       Appointment[]
+  financialAccounts  FinancialAccount[]
+  roles              Role[]
+  inventoryMovements InventoryMovement[]
+  cashRegisters      CashRegister[]
+  auditLogs          AuditLog[]
+  commissionRules    CommissionRule[]
+  ExpenseCategory    ExpenseCategory[]
+  UserRole           UserRole[]
+  StripeIntegration  StripeIntegration[]
+  StripeCustomer     StripeCustomer[]
+  DataExport         DataExport[]
+  DataImport         DataImport[]
+
+  @@index([ownerId], name: "salon_owner_idx")
+  @@index([name], name: "salon_name_idx")
+  @@map("salons")
+}
+
+model Professional {
+  id              String           @id @default(uuid())
+  name            String
+  category        String
+  cpf             String?          @map("professional_cpf")
+  phone           String?
+  email           String?          @map("professional_email")
+  salonId         String           @map("salon_id")
+  salon           Salon            @relation(fields: [salonId], references: [id])
+  services        Service[]
+  commissions     Commission[]
+  appointments    Appointment[]
+  userRoles       UserRole[]
+  transactions    Transaction[]
+  commissionRules CommissionRule[] @relation("ProfessionalCommissionRules")
+  Sale            Sale[]
+  CashRegister    CashRegister[]
+
+  @@index([salonId], name: "professional_salon_idx")
+  @@index([email], name: "professional_email_idx")
+  @@map("professionals")
+}
+
+model Customer {
+  id        String    @id @default(uuid())
+  name      String
+  city      String?
+  address   String?
+  genre     String?
+  phone     String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  email     String?   @map("customer_email")
+  birthDay  DateTime? @map("birth_date")
+  salonId   String    @map("salon_id")
+  salon     Salon     @relation(fields: [salonId], references: [id])
+  sales     Sale[]
+
+  appointments Appointment[]
+  services     Service[]
+  transactions Transaction[]
+
+  @@index([salonId], name: "customer_salon_idx")
+  @@index([email], name: "customer_email_idx")
+  @@map("customers")
+}
+
+model Sale {
+  id              String        @id @default(uuid())
+  salonId         String        @map("salon_id")
+  customerId      String?       @map("customer_id")
+  professionalId  String?       @map("professional_id")
+  totalAmount     Float         @map("total_amount")
+  paymentMethodId String        @map("payment_method_id")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  salon           Salon         @relation(fields: [salonId], references: [id])
+  customer        Customer?     @relation(fields: [customerId], references: [id])
+  professional    Professional? @relation(fields: [professionalId], references: [id])
+  items           SaleItem[]
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  transaction     Transaction?  @relation(fields: [transactionId], references: [id])
+  transactionId   String?
+
+  @@index([salonId], name: "sale_salon_idx")
+  @@index([customerId], name: "sale_customer_idx")
+  @@index([createdAt], name: "sale_date_idx")
+  @@map("sales")
+}
+
+model SaleItem {
+  id        String   @id @default(uuid())
+  saleId    String   @map("sale_id")
+  serviceId String?  @map("service_id")
+  productId String?  @map("product_id")
+  quantity  Int
+  price     Float
+  total     Float
+  sale      Sale     @relation(fields: [saleId], references: [id])
+  service   Service? @relation(fields: [serviceId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
+
+  @@index([saleId], name: "sale_item_sale_idx")
+  @@index([serviceId], name: "sale_item_service_idx")
+  @@index([productId], name: "sale_item_product_idx")
+  @@map("sale_items")
+}
+
+model Service {
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  price           Float
+  duration        Int
+  salonId         String           @map("salon_id")
+  professionalId  String?          @map("professional_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  salon           Salon            @relation(fields: [salonId], references: [id])
+  professional    Professional?    @relation(fields: [professionalId], references: [id])
+  saleItems       SaleItem[]
+  appointments    Appointment[]
+  commissionRules CommissionRule[]
+  Customer        Customer?        @relation(fields: [customerId], references: [id])
+  customerId      String?
+
+  @@index([salonId], name: "service_salon_idx")
+  @@index([price], name: "service_price_idx")
+  @@map("services")
+}
+
+model Product {
+  id                 String              @id @default(uuid())
+  name               String
+  description        String?
+  price              Float
+  stock              Int
+  salonId            String              @map("salon_id")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  salon              Salon               @relation(fields: [salonId], references: [id])
+  saleItems          SaleItem[]
+  inventoryMovements InventoryMovement[]
+
+  @@index([salonId], name: "product_salon_idx")
+  @@index([price], name: "product_price_idx")
+  @@map("products")
+}
+
+model Expense {
+  id          String          @id @default(uuid())
+  description String
+  date        DateTime
+  amount      Float
+  categoryId  String          @map("category_id")
+  salonId     String          @map("salon_id")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  salon       Salon           @relation(fields: [salonId], references: [id])
+  category    ExpenseCategory @relation(fields: [categoryId], references: [id])
+
+  @@index([salonId], name: "expense_salon_idx")
+  @@index([categoryId], name: "expense_category_idx")
+  @@map("expenses")
+}
+
+model ExpenseCategory {
+  id        String    @id @default(uuid())
+  name      String
+  salonId   String    @map("salon_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  salon     Salon     @relation(fields: [salonId], references: [id])
+  expenses  Expense[]
+
+  @@index([salonId], name: "expense_category_salon_idx")
+  @@map("expense_categories")
+}
+
+model Commission {
+  id             String       @id @default(uuid())
+  amount         Float
+  professionalId String       @map("professional_id")
+  salonId        String       @map("salon_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  professional   Professional @relation(fields: [professionalId], references: [id])
+  salon          Salon        @relation(fields: [salonId], references: [id])
+
+  @@index([professionalId], name: "commission_professional_idx")
+  @@index([salonId], name: "commission_salon_idx")
+  @@map("commissions")
+}
+
+model PaymentMethod {
+  id        String   @id @default(uuid())
+  name      String
+  salonId   String   @map("salon_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  salon     Salon    @relation(fields: [salonId], references: [id])
+  sales     Sale[]
+
+  @@index([salonId], name: "payment_method_salon_idx")
+  @@map("payment_methods")
+}
+
+model Appointment {
+  id             String            @id @default(uuid())
+  salonId        String            @map("salon_id")
+  professionalId String            @map("professional_id")
+  customerId     String            @map("customer_id")
+  serviceId      String            @map("service_id")
+  date           DateTime
+  status         AppointmentStatus
+  notes          String?
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  salon          Salon             @relation(fields: [salonId], references: [id])
+  professional   Professional      @relation(fields: [professionalId], references: [id])
+  customer       Customer          @relation(fields: [customerId], references: [id])
+  service        Service           @relation(fields: [serviceId], references: [id])
+
+  @@index([salonId], name: "appointment_salon_idx")
+  @@index([professionalId], name: "appointment_professional_idx")
+  @@index([customerId], name: "appointment_customer_idx")
+  @@index([date], name: "appointment_date_idx")
+  @@map("appointments")
+}
+
+model Role {
+  id          String     @id @default(uuid())
+  name        String
+  permissions String[]
+  salonId     String     @map("salon_id")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  salon       Salon      @relation(fields: [salonId], references: [id])
+  userRoles   UserRole[]
+
+  @@index([salonId], name: "role_salon_idx")
+  @@map("roles")
+}
+
+model UserRole {
+  userId         String        @map("user_id")
+  roleId         String        @map("role_id")
+  salonId        String        @map("salon_id")
+  user           User          @relation(fields: [userId], references: [id])
+  role           Role          @relation(fields: [roleId], references: [id])
+  salon          Salon         @relation(fields: [salonId], references: [id])
+  createdAt      DateTime      @default(now()) @map("created_at")
+  Professional   Professional? @relation(fields: [professionalId], references: [id])
+  professionalId String?
+
+  @@id([userId, roleId, salonId])
+  @@index([userId], name: "user_role_user_idx")
+  @@index([roleId], name: "user_role_role_idx")
+  @@index([salonId], name: "user_role_salon_idx")
+  @@map("user_roles")
+}
+
+model FinancialAccount {
+  id           String        @id @default(uuid())
+  salonId      String        @map("salon_id")
+  balance      Float
+  currency     String
+  transactions Transaction[]
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  Salon        Salon         @relation(fields: [salonId], references: [id])
+
+  @@index([salonId], name: "financial_account_salon_idx")
+  @@map("financial_accounts")
+}
+
+model Transaction {
+  id               String           @id @default(uuid())
+  accountId        String           @map("account_id")
+  type             TransactionType
+  amount           Float
+  category         String
+  description      String
+  date             DateTime
+  referenceId      String?          @map("reference_id")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  financialAccount FinancialAccount @relation(fields: [accountId], references: [id])
+  Professional     Professional?    @relation(fields: [professionalId], references: [id])
+  professionalId   String?
+  Customer         Customer?        @relation(fields: [customerId], references: [id])
+  customerId       String?
+  Sale             Sale[]
+  CashRegister     CashRegister?    @relation(fields: [cashRegisterId], references: [id])
+  cashRegisterId   String?
+
+  @@index([accountId], name: "transaction_account_idx")
+  @@index([date], name: "transaction_date_idx")
+  @@index([type], name: "transaction_type_idx")
+  @@map("transactions")
+}
+
+model InventoryMovement {
+  id        String                @id @default(uuid())
+  productId String                @map("product_id")
+  quantity  Int
+  type      InventoryMovementType
+  reason    String
+  createdAt DateTime              @default(now()) @map("created_at")
+  product   Product               @relation(fields: [productId], references: [id])
+  Salon     Salon?                @relation(fields: [salonId], references: [id])
+  salonId   String?
+
+  @@index([productId], name: "inventory_movement_product_idx")
+  @@index([createdAt], name: "inventory_movement_date_idx")
+  @@map("inventory_movements")
+}
+
+model CashRegister {
+  id             String             @id @default(uuid())
+  salonId        String             @map("salon_id")
+  openingBalance Float              @map("opening_balance")
+  closingBalance Float?             @map("closing_balance")
+  startAt        DateTime           @map("start_at")
+  endAt          DateTime?          @map("end_at")
+  transactions   Transaction[]
+  responsibleId  String             @map("responsible_id")
+  status         CashRegisterStatus
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+  salon          Salon              @relation(fields: [salonId], references: [id])
+  responsible    Professional       @relation(fields: [responsibleId], references: [id])
+
+  @@index([salonId], name: "cash_register_salon_idx")
+  @@index([responsibleId], name: "cash_register_responsible_idx")
+  @@index([status], name: "cash_register_status_idx")
+  @@map("cash_registers")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  entity    String
+  entityId  String   @map("entity_id")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  details   Json
+  createdAt DateTime @default(now()) @map("created_at")
+  Salon     Salon?   @relation(fields: [salonId], references: [id])
+  salonId   String?
+
+  @@index([entity, entityId], name: "audit_log_entity_idx")
+  @@index([userId], name: "audit_log_user_idx")
+  @@index([createdAt], name: "audit_log_date_idx")
+  @@map("audit_logs")
+}
+
+model CommissionRule {
+  id              String         @id @default(uuid())
+  salonId         String         @map("salon_id")
+  professionalId  String?        @map("professional_id")
+  serviceId       String?        @map("service_id")
+  productCategory String?        @map("product_category")
+  type            CommissionType
+  value           Float
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  salon           Salon          @relation(fields: [salonId], references: [id])
+  professional    Professional?  @relation(fields: [professionalId], references: [id], name: "ProfessionalCommissionRules")
+  service         Service?       @relation(fields: [serviceId], references: [id])
+
+  @@index([salonId], name: "commission_rule_salon_idx")
+  @@index([professionalId], name: "commission_rule_professional_idx")
+  @@index([serviceId], name: "commission_rule_service_idx")
+  @@map("commission_rules")
+}
+
+model StripeIntegration {
+  id             String   @id @default(uuid())
+  salonId        String   @map("salon_id")
+  accountId      String   @map("account_id")
+  enabled        Boolean
+  currency       String
+  publishableKey String   @map("publishable_key")
+  secretKey      String   @map("secret_key")
+  webhookSecret  String   @map("webhook_secret")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  salon          Salon    @relation(fields: [salonId], references: [id])
+
+  @@index([salonId], name: "stripe_integration_salon_idx")
+  @@index([accountId], name: "stripe_integration_account_idx")
+  @@map("stripe_integrations")
+}
+
+model StripeCustomer {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  salonId         String   @map("salon_id")
+  stripeId        String   @map("stripe_id")
+  paymentMethodId String?  @map("payment_method_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  user            User     @relation(fields: [userId], references: [id])
+  salon           Salon    @relation(fields: [salonId], references: [id])
+
+  @@unique([stripeId], name: "stripe_customer_stripe_unique")
+  @@index([userId], name: "stripe_customer_user_idx")
+  @@index([salonId], name: "stripe_customer_salon_idx")
+  @@map("stripe_customers")
+}
+
+enum DataExportFormat {
+  CSV
+  JSON
+  XLSX
+}
+
+enum DataExportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model DataExport {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  salonId   String           @map("salon_id")
+  format    DataExportFormat
+  type      String
+  status    DataExportStatus
+  fileUrl   String?          @map("file_url")
+  filters   Json?
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  user      User             @relation(fields: [userId], references: [id])
+  salon     Salon            @relation(fields: [salonId], references: [id])
+
+  @@index([userId, salonId], name: "data_export_user_salon_idx")
+  @@index([status], name: "data_export_status_idx")
+  @@index([createdAt], name: "data_export_created_idx")
+  @@map("data_exports")
+}
+
+enum DataImportFormat {
+  CSV
+  JSON
+  XLSX
+}
+
+enum DataImportStatus {
+  PENDING
+  VALIDATING
+  IMPORTING
+  COMPLETED
+  FAILED
+}
+
+model DataImport {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  salonId   String           @map("salon_id")
+  format    DataImportFormat
+  type      String
+  status    DataImportStatus
+  fileUrl   String           @map("file_url")
+  mapping   Json?
+  stats     Json?
+  errors    Json?
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  user      User             @relation(fields: [userId], references: [id])
+  salon     Salon            @relation(fields: [salonId], references: [id])
+
+  @@index([userId, salonId], name: "data_import_user_salon_idx")
+  @@index([status], name: "data_import_status_idx")
+  @@index([fileUrl], name: "data_import_file_idx")
+  @@map("data_imports")
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @map("refresh_token") @db.Text
+  access_token      String? @map("access_token") @db.Text
+  expires_at        Int?
+  token_type        String? @map("token_type")
+  scope             String?
+  id_token          String? @map("id_token") @db.Text
+  session_state     String? @map("session_state")
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId], name: "account_provider_unique")
+  @@index([userId], name: "account_user_idx")
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expires], name: "session_expires_idx")
+  @@index([userId], name: "session_user_idx")
+  @@map("sessions")
+}
+
+model Authenticator {
+  id                   String  @id @default(uuid()) @map("authenticator_id")
+  credentialID         String  @unique(map: "authenticator_credential_unique") @map("credential_id")
+  userId               String  @map("user_id")
+  credentialPublicKey  String  @map("credential_public_key")
+  counter              BigInt  @map("counter")
+  credentialDeviceType String  @map("credential_device_type")
+  credentialBackedUp   Boolean @map("credential_backed_up")
+  transports           String?
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], name: "authenticator_user_idx")
+  @@map("authenticators")
+}
