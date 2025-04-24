@@ -40,7 +40,7 @@ export const saleController = {
     }),
   
     listSales: asyncHandler(async (req, res) => {
-      const { salonId } = req.query;
+      const { salonId } = req.user;
       const sales = await prisma.sale.findMany({
         where: { salonId: salonId as string }
       });

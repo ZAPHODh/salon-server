@@ -12,7 +12,7 @@ export const salonController = {
     }),
   
     getSalon: asyncHandler(async (req, res) => {
-      const { id } = req.params;
+      const { id } = req.user;
       const salon = await prisma.salon.findUnique({
         where: { id },
         include: { owner: true }

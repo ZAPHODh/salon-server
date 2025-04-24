@@ -1,3 +1,14 @@
+import { CommissionType } from "@prisma/client"; 
+
+export interface CreateCommissionRuleBody {
+  salonId: string;
+  professionalId?: string | null;
+  serviceId?: string | null;
+  productCategory?: string | null;
+  type: CommissionType; 
+  value: number;
+}
+
 export interface CreateSalonBody {
     ownerId: string;
     name: string;

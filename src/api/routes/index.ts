@@ -9,7 +9,7 @@ import inventoryRouter from './inventory';
 import stripeRouter from './stripe'
 import customerRouter from './customers'
 import { authController } from '../controllers/auth';
-
+import commissionRouter from './commission-rules'
 const { secure }= authController
 const router = Router();
 
@@ -22,4 +22,6 @@ router.use('/sales', secure, salesRouter);
 router.use('/inventory', secure, inventoryRouter);
 router.use('/stripe', stripeRouter)
 router.use('/customer', customerRouter)
+router.use('/commission-rules',secure, commissionRouter)
+
 export default router;

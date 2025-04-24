@@ -37,7 +37,7 @@ export const professionalController = {
     }),
   
     listProfessionals: asyncHandler(async (req, res) => {
-      const { salonId } = req.query;
+      const { salonId } = req.user;
       const professionals = await prisma.professional.findMany({
         where: { salonId: salonId as string }
       });

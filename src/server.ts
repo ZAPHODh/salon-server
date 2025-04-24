@@ -12,7 +12,7 @@ server.once('error', (err) => {
     console.error(err);
     process.exit(1);
 }).listen(PORT, () => {
-    console.log(`Servidor Socket.io rodando na porta ${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
 
 export { server }

@@ -8,9 +8,6 @@ import { asyncHandler } from '../../helper';
 import { prisma } from '../../../lib/prisma';
 
 
-  
-
-
 export const authController = {
   signup: asyncHandler(async (req, res) => {
     const user:Partial<User> = req.body;
@@ -46,7 +43,12 @@ export const authController = {
     res.json({
       accessToken: accessToken,
       email: sanitizedEmail,
-      name,
+      user:{
+        id:createdUser.id,
+        name:createdUser.name,
+        emailVerified:createdUser.emailVerified,
+        image:createdUser.image
+      },
       role: createdUser.subscriptionRole
     });
   }),
@@ -55,7 +57,6 @@ export const authController = {
       const {
         email, password 
       } = req.body;
-      
       // 1. Add extra validation on the body payload and user existence
       const sanitizedEmail:string = email.toLowerCase();
       const user = await prisma.user.findFirst({
@@ -79,7 +80,12 @@ export const authController = {
       res.json({
         email: sanitizedEmail,
         accessToken: user.accessToken,
-        name:user.name,
+        user:{
+          id:user.id,
+          name:user.name,
+          emailVerified:user.emailVerified,
+          image:user.image
+        },
         role:user.subscriptionRole
       });
     }
@@ -115,7 +121,12 @@ export const authController = {
     res.json({ 
       accessToken: newAccessToken,
       email: user.email,
-      name:user.name,
+      user:{
+        id:user.id,
+        name:user.name,
+        emailVerified:user.emailVerified,
+        image:user.image
+      },
       role:user.subscriptionRole
     });
   }),
