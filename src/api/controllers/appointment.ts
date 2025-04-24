@@ -37,12 +37,10 @@ export const appointmentController = {
     }),
   
     listAppointments: asyncHandler(async (req, res) => {
-      const { salonId, professionalId, customerId } = req.user;
+      const { salonId } = req.user;
       const appointments = await prisma.appointment.findMany({
         where: {
           salonId: salonId as string,
-          professionalId: professionalId as string,
-          customerId: customerId as string
         }
       });
       res.json(appointments);

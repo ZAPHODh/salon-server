@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prisma:generate": "prisma generate",
-    "build": "pnpm prisma:generate && tsc",
+    "build": "echo '🔨 Rodando build...' && pnpm prisma:generate && tsc && echo '✅ Build finalizado!' && ls -R dist",
     "start": "node ./dist/src/server.js"
   },
   "keywords": [],
