@@ -1,6 +1,6 @@
 import { prisma } from '../../../lib/prisma';
 import { asyncHandler } from '../../helper'
-import { calculateRetentionRate, processData } from '../services/customerdata';
+import { calculateRetentionRate, processData } from '../services/customer-data';
 
 interface CreateCustomerBody {
     name: string;
@@ -67,7 +67,24 @@ export const customerController = {
         });
         res.json(customers);
     }),
+    createManyCustomers: asyncHandler(async (req, res) => {
+        const salonId = req.user.salonId;
+        const body: CreateCustomerBody[] = req.body;
 
+        // Adiciona salonId em cada cliente do array
+        const createdCustomers = await prisma.customer.createMany({
+            data: body.map(customer => ({
+                ...customer,
+                salonId,
+            })),
+            skipDuplicates: true, // Opcional: ignora registros duplicados
+        });
+
+        res.status(201).json({
+            message: 'Clientes criados com sucesso',
+            count: createdCustomers.count
+        });
+    }),
     getCustomerAnalytics: asyncHandler(async (req, res) => {
         const salonId = req.user.salonId;
         const { professionalId, start, end } = req.query;
