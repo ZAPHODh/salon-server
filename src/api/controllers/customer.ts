@@ -65,13 +65,11 @@ export const customerController = {
             where: { salonId },
             orderBy: { name: 'asc' }
         });
-        console.log(customers)
         res.json(customers);
     }),
     createManyCustomers: asyncHandler(async (req, res) => {
         const salonId = req.user.salonId;
         const body: CreateCustomerBody[] = req.body;
-
         const createdCustomers = await prisma.customer.createMany({
             data: body.map(customer => ({
                 ...customer,

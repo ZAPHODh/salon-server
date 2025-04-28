@@ -8,7 +8,6 @@ type ValidateBodyParam<T>={
 
 async function isValidBody<T>({ body, zodSchema }: ValidateBodyParam<T>){
     const parsed = await zodSchema.safeParseAsync(body)
-
     if (parsed.error) {
         return parsed.error
       }
