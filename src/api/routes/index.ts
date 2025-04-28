@@ -20,8 +20,8 @@ router.use('/services', secure, servicesRouter);
 router.use('/appointments', secure, appointmentsRouter);
 router.use('/sales', secure, salesRouter);
 router.use('/inventory', secure, inventoryRouter);
-router.use('/stripe', stripeRouter)
-router.use('/customers', customerRouter)
-router.use('/commission-rules',secure, commissionRouter)
+router.use('/stripe', secure, stripeRouter)
+router.use('/customers', secure, customerRouter)
+router.use('/commission-rules', secure, commissionRouter)
 
 export default router;
