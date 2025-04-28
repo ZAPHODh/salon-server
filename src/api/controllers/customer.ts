@@ -65,6 +65,7 @@ export const customerController = {
             where: { salonId },
             orderBy: { name: 'asc' }
         });
+        console.log(customers)
         res.json(customers);
     }),
     createManyCustomers: asyncHandler(async (req, res) => {
