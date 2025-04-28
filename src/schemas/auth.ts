@@ -7,6 +7,3 @@ export const createUserSchema = z.object({
     .regex(/[A-Z]/)
     .regex(/[0-9]/),
 });
-
-
-export const updateUserSchema = createUserSchema.partial();

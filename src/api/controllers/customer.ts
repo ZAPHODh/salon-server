@@ -71,13 +71,12 @@ export const customerController = {
         const salonId = req.user.salonId;
         const body: CreateCustomerBody[] = req.body;
 
-        // Adiciona salonId em cada cliente do array
         const createdCustomers = await prisma.customer.createMany({
             data: body.map(customer => ({
                 ...customer,
                 salonId,
             })),
-            skipDuplicates: true, // Opcional: ignora registros duplicados
+            skipDuplicates: true, 
         });
 
         res.status(201).json({

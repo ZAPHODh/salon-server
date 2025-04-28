@@ -13,13 +13,14 @@ export const authController = {
   signup: asyncHandler(async (req, res) => {
     const user:Partial<User> = req.body;
 
-
     const parsedUser = await createUserSchema.safeParseAsync(user)
+    
     if (parsedUser.error){
       res.status(400).json({ message: 'Campos obrigatórios não preenchidos' });
       return;
     }
-const {email,name,password}=parsedUser.data
+
+    const {email,name,password}=parsedUser.data
     const sanitizedEmail = email.toLowerCase();
     const sanitizedName = name.toLowerCase()
     const hashedPassword = await bcrypt.hash(password, 12);
