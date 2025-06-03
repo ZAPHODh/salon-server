@@ -2,10 +2,10 @@ import { z } from "zod";
 
 export const createCustomerSchema = z.object({
     name: z.string().min(1),
-    city: z.string().optional(),
-    address: z.string().optional(),
-    genre: z.string().optional(),
-    phone: z.string().optional(),
+    city: z.string(),
+    address: z.string(),
+    genre: z.string(),
+    phone: z.string(),
     email: z.string().email().optional(),
     birthDay: z.date().optional()
 });

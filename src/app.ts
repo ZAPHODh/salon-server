@@ -6,6 +6,8 @@ import routes from './api/routes'
 import morgan from 'morgan';
 import { limiter } from '../lib/rate-limit';
 import { corsOptions } from '../lib/cors-options';
+import { handleError } from './api/utils/error-handling';
+
 
 const app: Application = express();
 
@@ -18,5 +20,5 @@ app.use(morgan('combined'))
 
 app.use('/api/v1', limiter, routes)
 
-
+app.use(handleError)
 export { app }

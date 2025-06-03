@@ -4,17 +4,22 @@ import { CreateSalonBody } from "../../interfaces";
 
 export const salonController = {
     createSalon: asyncHandler(async (req, res) => {
+      const{ ownerId } = req.user
+      if(ownerId) {   
+        res.status(400).json({message:'Cant create two salons'})
+        return
+      }
       const body: CreateSalonBody = req.body;
       const salon = await prisma.salon.create({
-        data: body
+        data: {...body,ownerId:req.user.id}
       });
       res.status(201).json(salon);
     }),
   
     getSalon: asyncHandler(async (req, res) => {
-      const { id } = req.user;
+      const { salonId } = req.user;
       const salon = await prisma.salon.findUnique({
-        where: { id },
+        where: { id:salonId },
         include: { owner: true }
       });
       res.json(salon);

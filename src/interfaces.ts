@@ -8,14 +8,18 @@ export interface CreateCommissionRuleBody {
   type: CommissionType; 
   value: number;
 }
-
+type TWorkingHours = { [key: number]: { from: number; to: number } };
+type TVisibleHours = { from: number; to: number };
 export interface CreateSalonBody {
     ownerId: string;
     name: string;
     address: string;
     city?: string;
     cep: string;
-  }
+    workingHours:TWorkingHours;
+    visibleHours:TVisibleHours;
+    countryCode:string
+  } 
   
 export interface CreateProfessionalBody {
     name: string;

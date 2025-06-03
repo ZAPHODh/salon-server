@@ -68,6 +68,9 @@ model Salon {
   id                 String              @id @default(uuid())
   ownerId            String              @map("owner_id")
   owner              User                @relation(fields: [ownerId], references: [id])
+  workingHours       Json                @map("working_hours")
+  visibleHours       Json                @map("visible_hours")
+  countryCode        String
   name               String
   address            String
   city               String?
