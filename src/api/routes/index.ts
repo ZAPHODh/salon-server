@@ -9,19 +9,18 @@ import inventoryRouter from './inventory';
 import stripeRouter from './stripe'
 import customerRouter from './customers'
 import { authController } from '../controllers/auth';
-import commissionRouter from './commission-rules'
 const { secure }= authController
 const router = Router();
 
 router.use('/auth', authRouter);
-router.use('/salons', secure, salonsRouter);
-router.use('/professionals', secure, professionalsRouter);
-router.use('/services', secure, servicesRouter);
-router.use('/appointments', secure, appointmentsRouter);
-router.use('/sales', secure, salesRouter);
-router.use('/inventory', secure, inventoryRouter);
-router.use('/stripe', secure, stripeRouter)
-router.use('/customers', secure, customerRouter)
-router.use('/commission-rules', secure, commissionRouter)
+router.use(secure)
+router.use('/salons', salonsRouter);
+router.use('/professionals', professionalsRouter);
+router.use('/services', servicesRouter);
+router.use('/appointments', appointmentsRouter);
+router.use('/sales', salesRouter);
+router.use('/inventory', inventoryRouter);
+router.use('/stripe', stripeRouter)
+router.use('/customers', customerRouter)
 
 export default router;

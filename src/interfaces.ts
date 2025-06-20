@@ -28,6 +28,7 @@ export interface CreateProfessionalBody {
     phone?: string;
     email?: string;
     salonId: string;
+    commissionRate: number
 }
   
 export interface CreateServiceBody {

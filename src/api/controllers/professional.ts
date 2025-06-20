@@ -1,21 +1,23 @@
 import { prisma } from "../../../lib/prisma";
 import { asyncHandler } from "../../helper";
 import { CreateProfessionalBody } from "../../interfaces";
+import { generateUniqueSlug } from "../services/slug";
 
 export const professionalController = {
     createProfessional: asyncHandler(async (req, res) => {
       const body: CreateProfessionalBody = req.body;
+      const slug = await generateUniqueSlug(body.name)
       const professional = await prisma.professional.create({
-        data: body
+        data: { ...body, salonId: req.user.salons[0].id as string,slug},
       });
       res.status(201).json(professional);
     }),
   
     getProfessional: asyncHandler(async (req, res) => {
-      const { id } = req.params;
-      const professional = await prisma.professional.findUnique({
-        where: { id },
-        include: { salon: true, services: true }
+      const { slug } = req.params;
+      const professional = await prisma.professional.findFirst({
+        where: { slug },
+        include: { salon: true, services: true, appointments: true, Sale: true, commissions: true}
       });
       res.json(professional);
     }),
@@ -37,9 +39,9 @@ export const professionalController = {
     }),
   
     listProfessionals: asyncHandler(async (req, res) => {
-      const { salonId } = req.user;
+      const { salons } = req.user;
       const professionals = await prisma.professional.findMany({
-        where: { salonId: salonId as string }
+        where: { salonId: salons[0].id as string }
       });
       res.json(professionals);
     })

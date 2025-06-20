@@ -6,11 +6,10 @@ export const appointmentController = {
     createAppointment: asyncHandler(async (req, res) => {
       const body: CreateAppointmentBody = req.body;
       const appointment = await prisma.appointment.create({
-        data: body
+        data: {...body,salonId: req.user.salons[0].id},
       });
       res.status(201).json(appointment);
     }),
-  
     getAppointment: asyncHandler(async (req, res) => {
       const { id } = req.params;
       const appointment = await prisma.appointment.findUnique({

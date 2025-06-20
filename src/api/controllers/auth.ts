@@ -135,6 +135,9 @@ export const authController = {
     const user = await prisma.user.findFirst({
       where:{
         accessToken:token
+      },
+      include:{
+        salons: true,
       }
     }
     );

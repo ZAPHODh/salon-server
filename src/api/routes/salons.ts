@@ -3,6 +3,7 @@ import { asyncHandler } from '../../helper';
 import { salonController } from '../controllers/salon';
 
 
+
 const router = Router();
 
 router.get('/', asyncHandler(salonController.getSalon));

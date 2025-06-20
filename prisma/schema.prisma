@@ -91,7 +91,6 @@ model Salon {
   inventoryMovements InventoryMovement[]
   cashRegisters      CashRegister[]
   auditLogs          AuditLog[]
-  commissionRules    CommissionRule[]
   ExpenseCategory    ExpenseCategory[]
   UserRole           UserRole[]
   StripeIntegration  StripeIntegration[]
@@ -105,22 +104,23 @@ model Salon {
 }
 
 model Professional {
-  id              String           @id @default(uuid())
-  name            String
-  category        String
-  cpf             String?          @map("professional_cpf")
-  phone           String?
-  email           String?          @map("professional_email")
-  salonId         String           @map("salon_id")
-  salon           Salon            @relation(fields: [salonId], references: [id])
-  services        Service[]
-  commissions     Commission[]
-  appointments    Appointment[]
-  userRoles       UserRole[]
-  transactions    Transaction[]
-  commissionRules CommissionRule[] @relation("ProfessionalCommissionRules")
-  Sale            Sale[]
-  CashRegister    CashRegister[]
+  id             String         @id @default(uuid())
+  slug           String         @unique
+  name           String
+  category       String
+  cpf            String?        @map("professional_cpf")
+  phone          String?
+  email          String?        @map("professional_email")
+  salonId        String         @map("salon_id")
+  salon          Salon          @relation(fields: [salonId], references: [id])
+  services       Service[]
+  commissions    Commission[]
+  appointments   Appointment[]
+  userRoles      UserRole[]
+  transactions   Transaction[]
+  Sale           Sale[]
+  CashRegister   CashRegister[]
+  commissionRate Int
 
   @@index([salonId], name: "professional_salon_idx")
   @@index([email], name: "professional_email_idx")
@@ -128,19 +128,18 @@ model Professional {
 }
 
 model Customer {
-  id        String    @id @default(uuid())
-  name      String
-  city      String?
-  address   String?
-  genre     String?
-  phone     String?
-  createdAt DateTime  @default(now()) @map("created_at")
-  email     String?   @map("customer_email")
-  birthDay  DateTime? @map("birth_date")
-  salonId   String    @map("salon_id")
-  salon     Salon     @relation(fields: [salonId], references: [id])
-  sales     Sale[]
-
+  id           String        @id @default(uuid())
+  name         String
+  city         String?
+  address      String?
+  genre        String?
+  phone        String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  email        String?       @map("customer_email")
+  birthDay     DateTime?     @map("birth_date")
+  salonId      String        @map("salon_id")
+  salon        Salon         @relation(fields: [salonId], references: [id])
+  sales        Sale[]
   appointments Appointment[]
   services     Service[]
   transactions Transaction[]
@@ -192,22 +191,21 @@ model SaleItem {
 }
 
 model Service {
-  id              String           @id @default(uuid())
-  name            String
-  description     String?
-  price           Float
-  duration        Int
-  salonId         String           @map("salon_id")
-  professionalId  String?          @map("professional_id")
-  createdAt       DateTime         @default(now()) @map("created_at")
-  updatedAt       DateTime         @updatedAt @map("updated_at")
-  salon           Salon            @relation(fields: [salonId], references: [id])
-  professional    Professional?    @relation(fields: [professionalId], references: [id])
-  saleItems       SaleItem[]
-  appointments    Appointment[]
-  commissionRules CommissionRule[]
-  Customer        Customer?        @relation(fields: [customerId], references: [id])
-  customerId      String?
+  id             String        @id @default(uuid())
+  name           String
+  description    String?
+  price          Float
+  duration       Int
+  salonId        String        @map("salon_id")
+  professionalId String?       @map("professional_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  salon          Salon         @relation(fields: [salonId], references: [id])
+  professional   Professional? @relation(fields: [professionalId], references: [id])
+  saleItems      SaleItem[]
+  appointments   Appointment[]
+  Customer       Customer?     @relation(fields: [customerId], references: [id])
+  customerId     String?
 
   @@index([salonId], name: "service_salon_idx")
   @@index([price], name: "service_price_idx")
@@ -437,26 +435,6 @@ model AuditLog {
   @@index([userId], name: "audit_log_user_idx")
   @@index([createdAt], name: "audit_log_date_idx")
   @@map("audit_logs")
-}
-
-model CommissionRule {
-  id              String         @id @default(uuid())
-  salonId         String         @map("salon_id")
-  professionalId  String?        @map("professional_id")
-  serviceId       String?        @map("service_id")
-  productCategory String?        @map("product_category")
-  type            CommissionType
-  value           Float
-  createdAt       DateTime       @default(now()) @map("created_at")
-  updatedAt       DateTime       @updatedAt @map("updated_at")
-  salon           Salon          @relation(fields: [salonId], references: [id])
-  professional    Professional?  @relation(fields: [professionalId], references: [id], name: "ProfessionalCommissionRules")
-  service         Service?       @relation(fields: [serviceId], references: [id])
-
-  @@index([salonId], name: "commission_rule_salon_idx")
-  @@index([professionalId], name: "commission_rule_professional_idx")
-  @@index([serviceId], name: "commission_rule_service_idx")
-  @@map("commission_rules")
 }
 
 model StripeIntegration {

@@ -6,7 +6,7 @@ export const createProfessionalSchema = z.object({
     cpf: z.string().optional(),
     phone: z.string().optional(),
     email: z.string().email().optional(),
-    commissionRuleId: z.string().min(1),
+    commissionRate: z.number(),
 });
 
 export const updateProfessionalSchema = z.object({
@@ -16,5 +16,5 @@ export const updateProfessionalSchema = z.object({
     cpf: z.string().optional(),
     phone: z.string().optional(),
     email: z.string().email().optional(),
-    commissionRuleId: z.string().min(1),
+    commissionRate: z.number(),
 });
