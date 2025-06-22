@@ -2,4 +2,8 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export { prisma }
+type ModelClient =
+  | typeof prisma.professional
+  | typeof prisma.customer;
+  
+export { prisma , ModelClient}

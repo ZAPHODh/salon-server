@@ -1,7 +1,8 @@
 import slugify from 'slugify';
-import { prisma } from '../../../lib/prisma';
+import { ModelClient } from '../../../lib/prisma';
 const MAX_ATTEMPTS = 100;
 const MAX_SLUG_LENGTH = 255; 
+
 
 const generateSlug = (text: string, maxLength: number = 240) => {
   if (!text.trim()) throw new Error('Title cannot be empty');
@@ -16,17 +17,19 @@ const generateSlug = (text: string, maxLength: number = 240) => {
 };
 
 
-export const generateUniqueSlug = async (title: string) => {
-
+export const generateUniqueSlug = async (
+  title: string,
+  modelClient: ModelClient
+) => {
   const baseSlug = generateSlug(title, MAX_SLUG_LENGTH - 10);
-
   let slug = baseSlug;
   let attempt = 1;
 
   while (attempt <= MAX_ATTEMPTS) {
-    const existing = await prisma.professional.findFirst({ 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const existing = await (modelClient as any).findFirst({
       where: { slug },
-      select: { id: true } 
+      select: { id: true },
     });
 
     if (!existing) return slug;

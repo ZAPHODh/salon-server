@@ -6,7 +6,7 @@ import { generateUniqueSlug } from "../services/slug";
 export const professionalController = {
     createProfessional: asyncHandler(async (req, res) => {
       const body: CreateProfessionalBody = req.body;
-      const slug = await generateUniqueSlug(body.name)
+      const slug = await generateUniqueSlug(body.name, prisma.professional)
       const professional = await prisma.professional.create({
         data: { ...body, salonId: req.user.salons[0].id as string,slug},
       });

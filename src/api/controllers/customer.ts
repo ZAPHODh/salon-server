@@ -1,6 +1,7 @@
 import { prisma } from '../../../lib/prisma';
 import { asyncHandler } from '../../helper'
 import { calculateRetentionRate, processData } from '../services/customer-data';
+import { generateUniqueSlug } from '../services/slug';
 
 interface CreateCustomerBody {
     name: string;
@@ -16,13 +17,13 @@ interface CreateCustomerBody {
 
 export const customerController = {
     createCustomer: asyncHandler(async (req, res) => {
-        const salonId = req.user.salonId;
         const body: CreateCustomerBody = req.body;
-
+        const slug = await generateUniqueSlug(body.name, prisma.customer)
         const customer = await prisma.customer.create({
             data: {
                 ...body,
-                salonId,
+                salonId:req.user.salons[0].id,
+                slug
             }
         });
         res.status(201).json(customer);
@@ -68,12 +69,17 @@ export const customerController = {
         res.json(customers);
     }),
     createManyCustomers: asyncHandler(async (req, res) => {
-        const salonId = req.user.salonId;
         const body: CreateCustomerBody[] = req.body;
+        const slugfiedBody = await Promise.all(
+            body.map(async (customer) => {
+                const slug = await generateUniqueSlug(customer.name, prisma.customer);
+                return { ...customer, slug };
+            })
+        );
         const createdCustomers = await prisma.customer.createMany({
-            data: body.map(customer => ({
+            data: slugfiedBody.map(customer => ({
                 ...customer,
-                salonId,
+                salonId:req.user.salons[0].id,
             })),
             skipDuplicates: true, 
         });
