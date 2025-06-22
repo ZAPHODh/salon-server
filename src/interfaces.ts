@@ -27,7 +27,6 @@ export interface CreateProfessionalBody {
     cpf?: string;
     phone?: string;
     email?: string;
-    salonId: string;
     commissionRate: number
 }
   
@@ -36,8 +35,6 @@ export interface CreateServiceBody {
     description?: string;
     price: number;
     duration: number;
-    salonId: string;
-    professionalId?: string;
 }
   
 export interface CreateAppointmentBody {

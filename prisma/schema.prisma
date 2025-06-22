@@ -142,7 +142,6 @@ model Customer {
   salon        Salon         @relation(fields: [salonId], references: [id])
   sales        Sale[]
   appointments Appointment[]
-  services     Service[]
   transactions Transaction[]
 
   @@index([salonId], name: "customer_salon_idx")
@@ -198,15 +197,13 @@ model Service {
   price          Float
   duration       Int
   salonId        String        @map("salon_id")
-  professionalId String?       @map("professional_id")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
   salon          Salon         @relation(fields: [salonId], references: [id])
-  professional   Professional? @relation(fields: [professionalId], references: [id])
   saleItems      SaleItem[]
   appointments   Appointment[]
-  Customer       Customer?     @relation(fields: [customerId], references: [id])
-  customerId     String?
+  Professional   Professional? @relation(fields: [professionalId], references: [id])
+  professionalId String?
 
   @@index([salonId], name: "service_salon_idx")
   @@index([price], name: "service_price_idx")

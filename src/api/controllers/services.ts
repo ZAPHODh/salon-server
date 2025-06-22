@@ -6,7 +6,7 @@ export const serviceController = {
     createService: asyncHandler(async (req, res) => {
       const body: CreateServiceBody = req.body;
       const service = await prisma.service.create({
-        data: body
+        data: {...body,salonId: req.user.salons[0].id}
       });
       res.status(201).json(service);
     }),
@@ -15,7 +15,7 @@ export const serviceController = {
       const { id } = req.params;
       const service = await prisma.service.findUnique({
         where: { id },
-        include: { salon: true, professional: true }
+        include: { salon: true, professional: true , appointments:true}
       });
       res.json(service);
     }),
@@ -37,9 +37,8 @@ export const serviceController = {
     }),
   
     listServices: asyncHandler(async (req, res) => {
-      const { salonId } = req.query;
       const services = await prisma.service.findMany({
-        where: { salonId: salonId as string }
+        where: { salonId: req.user.salons[0].id }
       });
       res.json(services);
     })

@@ -7,7 +7,7 @@ export const createCustomerSchema = z.object({
     genre: z.string(),
     phone: z.string(),
     email: z.string().email().optional(),
-    birthDay: z.date().optional()
+    birthDay: z.string().optional()
 });
 
 export const updateCustomerSchema = z.object({
