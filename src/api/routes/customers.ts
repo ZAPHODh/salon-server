@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/', validateBodyMiddleware(createCustomerSchema), customerController.createCustomer);
 router.post('/many', validateBodyMiddleware(createManyCustomersSchema), customerController.createManyCustomers);
 router.get('/', customerController.listCustomers);
-router.get('/:id', customerController.getCustomer);
+router.get('/:slug', customerController.getCustomer);
 router.put('/:id', customerController.updateCustomer);
 router.delete('/:id', validateBodyMiddleware(createCustomerSchema), customerController.deleteCustomer);
 

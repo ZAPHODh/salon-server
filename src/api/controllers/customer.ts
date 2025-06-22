@@ -30,9 +30,9 @@ export const customerController = {
     }),
 
     getCustomer: asyncHandler(async (req, res) => {
-        const { id } = req.params;
-        const customer = await prisma.customer.findUnique({
-            where: { id },
+        const { slug } = req.params;
+        const customer = await prisma.customer.findFirst({
+            where: { slug },
             include: {
                 sales: true,
                 appointments: true,
