@@ -1,6 +1,4 @@
 import { stripe } from "../../../lib/stripe";
-
-
 export class CheckoutService {
   static async createSession(userId: string, priceId: string) {
     return stripe.checkout.sessions.create({

@@ -5,23 +5,38 @@ export const AppointmentStatusEnum = z.enum([
   'COMPLETED',
   'CANCELLED',
   'NO_SHOW',
-
 ]);
 export const CreateAppointmentSchema = z.object({
-  salonId: z.string().uuid(),
   professionalId: z.string().uuid(),
   customerId: z.string().uuid(),
   serviceId: z.string().uuid(),
-  date: z.union([z.string().datetime(), z.date()]), 
+  startDate: z.string().datetime(),
+  startTime: z.object({
+    hour: z.number().int().min(0).max(23),
+    minute: z.number().int().min(0).max(59),
+  }),
+  endDate: z.string().datetime(),
+  endTime: z.object({
+    hour: z.number().int().min(0).max(23),
+    minute: z.number().int().min(0).max(59),
+  }),
   status: AppointmentStatusEnum,
   notes: z.string().optional(),
 });
 export const UpdateAppointmentSchema = z.object({
-  salonId: z.string().uuid().optional(),
   professionalId: z.string().uuid().optional(),
   customerId: z.string().uuid().optional(),
   serviceId: z.string().uuid().optional(),
-  date: z.union([z.string().datetime(), z.date()]).optional(),
+   startDate: z.string().datetime(),
+  startTime: z.object({
+    hour: z.number().int().min(0).max(23),
+    minute: z.number().int().min(0).max(59),
+  }),
+  endDate: z.string().datetime(),
+  endTime: z.object({
+    hour: z.number().int().min(0).max(23),
+    minute: z.number().int().min(0).max(59),
+  }),
   status: AppointmentStatusEnum.optional(),
   notes: z.string().optional(),
 });

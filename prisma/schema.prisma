@@ -292,7 +292,10 @@ model Appointment {
   professionalId String            @map("professional_id")
   customerId     String            @map("customer_id")
   serviceId      String            @map("service_id")
-  date           DateTime
+  startDate      String
+  startTime      Json
+  endDate        String
+  endTime        Json
   status         AppointmentStatus
   notes          String?
   createdAt      DateTime          @default(now()) @map("created_at")
@@ -305,7 +308,6 @@ model Appointment {
   @@index([salonId], name: "appointment_salon_idx")
   @@index([professionalId], name: "appointment_professional_idx")
   @@index([customerId], name: "appointment_customer_idx")
-  @@index([date], name: "appointment_date_idx")
   @@map("appointments")
 }
 

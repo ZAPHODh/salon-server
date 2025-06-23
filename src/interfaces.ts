@@ -42,7 +42,16 @@ export interface CreateAppointmentBody {
     professionalId: string;
     customerId: string;
     serviceId: string;
-    date: Date;
+    startTime: {
+      hour: number;
+      minute: number;
+    };
+    endTime: {
+      hour: number;
+      minute: number;
+    };
+    startDate: string;
+    endDate: string;
     status: 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'RESCHEDULED' | 'SCHEDULED';
     notes?: string;
 }

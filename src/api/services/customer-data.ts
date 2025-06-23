@@ -25,10 +25,8 @@ const getCustomerDetails = async (ids: string[]) => {
         }
     });
 };
-// Lógica auxiliar para cálculo de retenção
+
 export async function calculateRetentionRate(salonId: string, start: Date, end: Date) {
-    // Implementação complexa que depende do seu modelo de negócios
-    // Exemplo simplificado:
     const totalCustomers = await prisma.customer.count({ where: { salonId } });
     return totalCustomers > 0
         ? (await prisma.customer.count({

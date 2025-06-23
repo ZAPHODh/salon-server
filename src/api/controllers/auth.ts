@@ -84,7 +84,7 @@ export const authController = {
       });
     }
   ),
-  session:asyncHandler(async (req, res) => {
+  session: asyncHandler(async (req, res) => {
     const { authorization } = req.headers;
     if (!authorization) {
       res.status(401).json({ message: 'Unauthorized' });
@@ -124,7 +124,7 @@ export const authController = {
       role:user.subscriptionRole
     });
   }),
-  secure:asyncHandler(async (req, res, next) => {
+  secure: asyncHandler(async (req, res, next) => {
     const { authorization } = req.headers;
     if (!authorization) {
       res.status(401).json({ message: 'Unauthorized' });
