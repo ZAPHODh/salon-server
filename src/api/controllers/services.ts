@@ -15,7 +15,7 @@ export const serviceController = {
       const { id } = req.params;
       const service = await prisma.service.findUnique({
         where: { id },
-        include: { salon: true, professional: true , appointments:true}
+        include: { salon: true, appointments:true}
       });
       res.json(service);
     }),

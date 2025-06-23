@@ -36,7 +36,6 @@ export const customerController = {
             include: {
                 sales: true,
                 appointments: true,
-                services: true,
                 transactions: true
             }
         });
@@ -92,14 +91,10 @@ export const customerController = {
     getCustomerAnalytics: asyncHandler(async (req, res) => {
         const salonId = req.user.salonId;
         const { professionalId, start, end } = req.query;
-
-        // Filtro de datas
         const startDate = start ? new Date(String(start)) : new Date(new Date().setDate(1));
         const endDate = end ? new Date(String(end)) : new Date();
 
-        // Dados básicos para gráficos
         const [topByVisits, topBySpending, newCustomers] = await Promise.all([
-            // Top clientes por visitas
             prisma.sale.groupBy({
                 by: ["customerId"],
                 where: {

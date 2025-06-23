@@ -6,7 +6,7 @@ export const appointmentController = {
     createAppointment: asyncHandler(async (req, res) => {
       const body: CreateAppointmentBody = req.body;
       const appointment = await prisma.appointment.create({
-        data: {...body,salonId: req.user.salons[0].id},
+        data: {...body,salonId: req.user.salons[0].id, status:"SCHEDULED"},
       });
       res.status(201).json(appointment);
     }),
