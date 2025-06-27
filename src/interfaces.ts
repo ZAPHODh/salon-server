@@ -38,7 +38,6 @@ export interface CreateServiceBody {
 }
   
 export interface CreateAppointmentBody {
-    salonId: string;
     professionalId: string;
     customerId: string;
     serviceId: string;

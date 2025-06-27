@@ -37,7 +37,6 @@ export const authController = {
       } 
     });
 
-    
     res.json({
       accessToken: accessToken,
       email: sanitizedEmail,

@@ -1,3 +1,4 @@
+
 import { prisma } from "../../../lib/prisma";
 import { asyncHandler } from "../../helper";
 import { CreateAppointmentBody } from "../../interfaces";
@@ -5,8 +6,9 @@ import { CreateAppointmentBody } from "../../interfaces";
 export const appointmentController = {
     createAppointment: asyncHandler(async (req, res) => {
       const body: CreateAppointmentBody = req.body;
+      console.log(body)
       const appointment = await prisma.appointment.create({
-        data: {...body, salonId: req.user.salons[0].id, status:"SCHEDULED"},
+        data: {...body, salonId: req.user.salons[0].id},
       });
       res.status(201).json(appointment);
     }),
@@ -21,10 +23,10 @@ export const appointmentController = {
   
     updateAppointmentStatus: asyncHandler(async (req, res) => {
       const { id } = req.params;
-      const { status } = req.body;
+      const body: Partial<CreateAppointmentBody> = req.body
       const updatedAppointment = await prisma.appointment.update({
         where: { id },
-        data: { status }
+        data: {...body,salonId:req.user.salons[0].id}
       });
       res.json(updatedAppointment);
     }),
