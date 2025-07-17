@@ -6,9 +6,9 @@ import { CreateAppointmentBody } from "../../interfaces";
 export const appointmentController = {
     createAppointment: asyncHandler(async (req, res) => {
       const body: CreateAppointmentBody = req.body;
-      console.log(body)
       const appointment = await prisma.appointment.create({
         data: {...body, salonId: req.user.salons[0].id},
+        include: {professional: true, customer: true, service: true }
       });
       res.status(201).json(appointment);
     }),
