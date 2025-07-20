@@ -1,12 +1,16 @@
-import { Router } from 'express';
-import { asyncHandler } from '../../helper';
-import { saleController } from '../controllers/sale';
+import { Router } from "express"
+import { SalesController } from "../controllers/sales"
 
+const router = Router()
 
-const router = Router();
+router.get("/", SalesController.getAll)
 
-router.post('/', asyncHandler(saleController.createSale));
-router.get('/', asyncHandler(saleController.listSales));
-router.get('/:id', asyncHandler(saleController.getSale));
+router.post("/", SalesController.create)
 
-export default router;
+// PUT /api/v1/sales/:id (if needed)
+// router.put("/:id", SalesController.update)
+
+// DELETE /api/v1/sales/:id (if needed)
+// router.delete("/:id", SalesController.delete)
+
+export default router
