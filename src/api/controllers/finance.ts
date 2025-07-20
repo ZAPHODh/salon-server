@@ -6,7 +6,7 @@ export const FinanceController = {
   get: asyncHandler(async (req, res) => {
     const salonId = req.user.salonId
     const { from, to, professionalId } = req.query
-
+    
     const startDate = from ? new Date(String(from)) : new Date(new Date().getFullYear(), 0, 1)
     const endDate = to ? new Date(String(to)) : new Date()
 
