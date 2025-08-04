@@ -3,7 +3,7 @@ import { asyncHandler } from "../../helper"
 
 export const ExpenseCategoriesController = {
   getAll: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const categories = await prisma.expenseCategory.findMany({
       where: { salonId },
       include: {
@@ -20,7 +20,7 @@ export const ExpenseCategoriesController = {
   }),
 
   create: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const categoryData = { ...req.body, salonId }
 
     const category = await prisma.expenseCategory.create({
@@ -39,7 +39,7 @@ export const ExpenseCategoriesController = {
 
   update: asyncHandler(async (req, res) => {
     const { id } = req.params
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
 
     const category = await prisma.expenseCategory.update({
       where: {
@@ -61,7 +61,7 @@ export const ExpenseCategoriesController = {
 
   delete: asyncHandler(async (req, res) => {
     const { id } = req.params
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
 
     const expensesCount = await prisma.expense.count({
       where: {

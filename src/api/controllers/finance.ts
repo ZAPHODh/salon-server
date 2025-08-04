@@ -4,7 +4,7 @@ import { asyncHandler } from "../../helper"
 
 export const FinanceController = {
   get: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const { from, to, professionalId } = req.query
     
     const startDate = from ? new Date(String(from)) : new Date(new Date().getFullYear(), 0, 1)

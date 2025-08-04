@@ -3,7 +3,7 @@ import { asyncHandler } from "../../helper"
 
 export const SalesController = {
   getAll: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const { from, to, professionalId } = req.query
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,7 +75,7 @@ export const SalesController = {
   }),
 
   create: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const { items, ...saleData } = req.body
 
     const sale = await prisma.$transaction(async (tx) => {

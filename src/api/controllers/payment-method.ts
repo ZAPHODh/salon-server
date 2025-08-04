@@ -3,7 +3,7 @@ import { asyncHandler } from "../../helper"
 
 export const PaymentMethodsController = {
   getAll: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
 
     const paymentMethods = await prisma.paymentMethod.findMany({
       where: { salonId },
@@ -14,7 +14,7 @@ export const PaymentMethodsController = {
   }),
 
   create: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const paymentMethodData = { ...req.body, salonId }
 
     const paymentMethod = await prisma.paymentMethod.create({
@@ -26,7 +26,7 @@ export const PaymentMethodsController = {
 
   update: asyncHandler(async (req, res) => {
     const { id } = req.params
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
 
     const paymentMethod = await prisma.paymentMethod.update({
       where: {
@@ -41,7 +41,7 @@ export const PaymentMethodsController = {
 
   delete: asyncHandler(async (req, res) => {
     const { id } = req.params
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
 
     const salesCount = await prisma.sale.count({
       where: {

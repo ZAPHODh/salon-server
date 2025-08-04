@@ -3,7 +3,7 @@ import { asyncHandler } from "../../helper"
 
 export const ExpensesController = {
   getAll: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const { from, to } = req.query
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,7 +32,7 @@ export const ExpensesController = {
   }),
 
   create: asyncHandler(async (req, res) => {
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const expenseData = {
       ...req.body,
       salonId,
@@ -92,7 +92,7 @@ export const ExpensesController = {
 
   update: asyncHandler(async (req, res) => {
     const { id } = req.params
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
     const updateData = {
       ...req.body,
       date: req.body.date ? new Date(req.body.date) : undefined,
@@ -118,7 +118,7 @@ export const ExpensesController = {
   }),
   delete: asyncHandler(async (req, res) => {
     const { id } = req.params
-    const salonId = req.user.salonId
+    const salonId = req.user.salons[0].id;
 
     await prisma.expense.delete({
       where: {
