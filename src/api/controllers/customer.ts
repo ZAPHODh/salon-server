@@ -60,7 +60,7 @@ export const customerController = {
     }),
 
     listCustomers: asyncHandler(async (req, res) => {
-        const salonId = req.user.salonId;
+        const salonId = req.user.salons[0].id;
         const customers = await prisma.customer.findMany({
             where: { salonId },
             orderBy: { name: 'asc' }
@@ -89,7 +89,7 @@ export const customerController = {
         });
     }),
     getCustomerAnalytics: asyncHandler(async (req, res) => {
-        const salonId = req.user.salonId;
+        const salonId = req.user.salons[0].id;
         const { professionalId, start, end } = req.query;
         const startDate = start ? new Date(String(start)) : new Date(new Date().setDate(1));
         const endDate = end ? new Date(String(end)) : new Date();
