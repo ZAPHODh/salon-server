@@ -46,7 +46,6 @@ export const authController = {
         emailVerified:createdUser.emailVerified,
         image:createdUser.image
       },
-      role: createdUser.subscriptionRole
     });
   }),
   signin: asyncHandler(
@@ -79,7 +78,6 @@ export const authController = {
           emailVerified:user.emailVerified,
           image:user.image
         },
-        role:user.subscriptionRole
       });
     }
   ),
@@ -120,7 +118,6 @@ export const authController = {
         emailVerified:user.emailVerified,
         image:user.image
       },
-      role:user.subscriptionRole
     });
   }),
   secure: asyncHandler(async (req, res, next) => {
