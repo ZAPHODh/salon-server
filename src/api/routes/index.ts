@@ -6,7 +6,6 @@ import servicesRouter from './services';
 import appointmentsRouter from './appointments';
 import salesRouter from './sales';
 import inventoryRouter from './inventory';
-import stripeRouter from './stripe';
 import customerRouter from './customers';
 import financeRoutes from './financials';
 import commissionsRoutes from './commissions'
@@ -14,7 +13,7 @@ import expenseCategoriesRoutes from './expenses-categories'
 import expensesRoutes from './expenses'
 import transactionsRoutes from './transactions'
 import paymentMethodsRoutes from './payment-methods'
-
+import subscrpitonsRouter from './subscriptions';
 import { authController } from '../controllers/auth';
 
 const { secure }= authController
@@ -27,7 +26,7 @@ router.use('/professionals', professionalsRouter);
 router.use('/services', servicesRouter);
 router.use('/appointments', appointmentsRouter);
 router.use('/inventory', inventoryRouter);
-router.use('/stripe', stripeRouter)
+router.use('/subscriptions', subscrpitonsRouter )
 router.use('/customers', customerRouter)
 router.use("/transactions", transactionsRoutes)
 router.use("/sales", salesRouter)

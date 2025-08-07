@@ -38,27 +38,29 @@ enum CommissionType {
 }
 
 model User {
-  id                 String           @id @default(uuid())
-  name               String?
-  email              String           @unique @map("user_email")
-  emailVerified      DateTime?        @map("email_verified")
-  image              String?
-  password           String           @map("hashed_password")
-  accessToken        String?
-  subscriptionId     String?          @map("subscription_id")
-  subscriptionRole   String?          @map("subscription_role")
-  subscriptionStatus String?          @map("subscription_status")
-  createdAt          DateTime         @default(now()) @map("created_at")
-  updatedAt          DateTime         @updatedAt @map("updated_at")
-  accounts           Account[]
-  sessions           Session[]
-  authenticators     Authenticator[]
-  salons             Salon[]
-  roles              UserRole[]
-  auditLogs          AuditLog[]
-  StripeCustomer     StripeCustomer[]
-  DataExport         DataExport[]
-  DataImport         DataImport[]
+  id                     String          @id @default(uuid())
+  name                   String?
+  email                  String          @unique @map("user_email")
+  emailVerified          DateTime?       @map("email_verified")
+  image                  String?
+  password               String          @map("hashed_password")
+  accessToken            String?
+  createdAt              DateTime        @default(now()) @map("created_at")
+  updatedAt              DateTime        @updatedAt @map("updated_at")
+  stripeCustomerId       String?         @unique @map(name: "stripe_customer_id")
+  stripeSubscriptionId   String?         @unique @map(name: "stripe_subscription_id")
+  stripePriceId          String?         @map(name: "stripe_price_id")
+  stripeCurrentPeriodEnd DateTime?       @map(name: "stripe_current_period_end")
+  accounts               Account[]
+  sessions               Session[]
+  authenticators         Authenticator[]
+  salons                 Salon[]
+  roles                  UserRole[]
+  auditLogs              AuditLog[]
+
+  DataExport     DataExport[]
+  DataImport     DataImport[]
+  StripeCustomer StripeCustomer[]
 
   @@index([email], name: "user_email_idx")
   @@map("users")
