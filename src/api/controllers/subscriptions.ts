@@ -4,18 +4,22 @@ import { asyncHandler } from "../../helper";
 export const subscriptionsController = {
     getSubscription: asyncHandler(async (req, res) => {
       const { id } = req.params;
-       const user = await prisma.user.findFirst({
-    where: {
-      id,
-    },
-    select: {
-      stripeSubscriptionId: true,
-      stripeCurrentPeriodEnd: true,
-      stripeCustomerId: true,
-      stripePriceId: true,
-    },
-  });
-      res.json(user);
+      try {
+         const user = await prisma.user.findFirst({
+          where: {
+            id,
+          },
+          select: {
+            stripeSubscriptionId: true,
+            stripeCurrentPeriodEnd: true,
+            stripeCustomerId: true,
+            stripePriceId: true,
+          },
+        });
+        res.status(200).json(user);
+      } catch  {
+        res.status(500).json({ error: "Failed to retrieve subscription" });
+      }
     }),
   
     updateSubscriptionAsync: asyncHandler(async (req, res) => {

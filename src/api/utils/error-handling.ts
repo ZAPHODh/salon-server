@@ -71,7 +71,7 @@ const handlePrismaError = (error: Prisma.PrismaClientKnownRequestError): ErrorRe
     default:
       return {
         status: 500,
-        message: `Database error: ${error.code}`
+        message: 'Database error: ${error.code}'
       };
   }
 };
