@@ -38,29 +38,28 @@ enum CommissionType {
 }
 
 model User {
-  id                     String          @id @default(uuid())
-  name                   String?
-  email                  String          @unique @map("user_email")
-  emailVerified          DateTime?       @map("email_verified")
-  image                  String?
-  password               String          @map("hashed_password")
-  accessToken            String?
-  createdAt              DateTime        @default(now()) @map("created_at")
-  updatedAt              DateTime        @updatedAt @map("updated_at")
-  stripeCustomerId       String?         @unique @map(name: "stripe_customer_id")
-  stripeSubscriptionId   String?         @unique @map(name: "stripe_subscription_id")
-  stripePriceId          String?         @map(name: "stripe_price_id")
-  stripeCurrentPeriodEnd DateTime?       @map(name: "stripe_current_period_end")
-  accounts               Account[]
-  sessions               Session[]
-  authenticators         Authenticator[]
-  salons                 Salon[]
-  roles                  UserRole[]
-  auditLogs              AuditLog[]
-
-  DataExport     DataExport[]
-  DataImport     DataImport[]
-  StripeCustomer StripeCustomer[]
+  id                 String           @id @default(uuid())
+  name               String?
+  email              String           @unique @map("user_email")
+  emailVerified      DateTime?        @map("email_verified")
+  image              String?
+  password           String           @map("hashed_password")
+  accessToken        String?
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+  stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
+  stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
+  stripePriceId          String?   @map(name: "stripe_price_id")
+  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+  accounts           Account[]
+  sessions           Session[]
+  authenticators     Authenticator[]
+  salons             Salon[]
+  roles              UserRole[]
+  auditLogs          AuditLog[]
+  
+  DataExport         DataExport[]
+  DataImport         DataImport[]
 
   @@index([email], name: "user_email_idx")
   @@map("users")
@@ -95,8 +94,6 @@ model Salon {
   auditLogs          AuditLog[]
   ExpenseCategory    ExpenseCategory[]
   UserRole           UserRole[]
-  StripeIntegration  StripeIntegration[]
-  StripeCustomer     StripeCustomer[]
   DataExport         DataExport[]
   DataImport         DataImport[]
 
@@ -439,40 +436,7 @@ model AuditLog {
   @@map("audit_logs")
 }
 
-model StripeIntegration {
-  id             String   @id @default(uuid())
-  salonId        String   @map("salon_id")
-  accountId      String   @map("account_id")
-  enabled        Boolean
-  currency       String
-  publishableKey String   @map("publishable_key")
-  secretKey      String   @map("secret_key")
-  webhookSecret  String   @map("webhook_secret")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-  salon          Salon    @relation(fields: [salonId], references: [id])
 
-  @@index([salonId], name: "stripe_integration_salon_idx")
-  @@index([accountId], name: "stripe_integration_account_idx")
-  @@map("stripe_integrations")
-}
-
-model StripeCustomer {
-  id              String   @id @default(uuid())
-  userId          String   @map("user_id")
-  salonId         String   @map("salon_id")
-  stripeId        String   @map("stripe_id")
-  paymentMethodId String?  @map("payment_method_id")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-  user            User     @relation(fields: [userId], references: [id])
-  salon           Salon    @relation(fields: [salonId], references: [id])
-
-  @@unique([stripeId], name: "stripe_customer_stripe_unique")
-  @@index([userId], name: "stripe_customer_user_idx")
-  @@index([salonId], name: "stripe_customer_salon_idx")
-  @@map("stripe_customers")
-}
 
 enum DataExportFormat {
   CSV
