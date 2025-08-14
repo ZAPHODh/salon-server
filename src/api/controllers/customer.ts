@@ -35,10 +35,16 @@ export const customerController = {
             where: { slug },
             include: {
                 sales: true,
-                appointments: true,
+                appointments: {
+                    include:{
+                        professional:true,
+                        service:true
+                    }
+                },
                 transactions: true
             }
         });
+        console.log(slug, customer);
         res.json(customer);
     }),
 
