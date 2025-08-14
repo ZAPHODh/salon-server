@@ -24,7 +24,6 @@ export const salonController = {
       console.log('salons:', salons);
       const salon = await prisma.salon.findUnique({
         where: { id:salons[0].id },
-        include: { owner: true }
       });
       res.json(salon);
     }),
