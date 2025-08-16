@@ -20,7 +20,7 @@ export const authController = {
       return;
     }
 
-    const {email,name,password}=parsedUser.data
+    const { email, name, password } = parsedUser.data
     const sanitizedEmail = email.toLowerCase();
     const sanitizedName = name.toLowerCase()
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -53,7 +53,7 @@ export const authController = {
       const {
         email, password 
       } = req.body;
-      const sanitizedEmail:string = email.toLowerCase();
+      const sanitizedEmail: string = email.toLowerCase();
       const user = await prisma.user.findFirst({
         where: { email: sanitizedEmail }
       });
